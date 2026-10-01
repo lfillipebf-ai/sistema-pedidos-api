@@ -8,6 +8,11 @@ services:
       POSTGRES_PASSWORD: postgres
     ports:
       - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $pedidos -d $pedidos"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
     volumes:
       - pedidos_data:/var/lib/postgresql/data
 
@@ -15,7 +20,8 @@ services:
     build: ./backend
     container_name: pedidos-api
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     environment:
       DB_URL: jdbc:postgresql://postgres:5432/pedidos
       DB_USERNAME: postgres
