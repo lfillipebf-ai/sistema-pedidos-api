@@ -1,0 +1,27 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: pedidos-postgres
+    environment:
+      POSTGRES_DB: pedidos
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - pedidos_data:/var/lib/postgresql/data
+
+  api:
+    build: ./backend
+    container_name: pedidos-api
+    depends_on:
+      - postgres
+    environment:
+      DB_URL: jdbc:postgresql://postgres:5432/pedidos
+      DB_USERNAME: postgres
+      DB_PASSWORD: postgres
+    ports:
+      - "8080:8080"
+
+volumes:
+  pedidos_data:
